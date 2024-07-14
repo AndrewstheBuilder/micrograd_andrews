@@ -16,7 +16,7 @@ pip install micrograd
 Below is a slightly contrived example showing a number of possible supported operations:
 
 ```python
-from micrograd.engine import Value
+from micrograd_andrews.engine import Value
 
 a = Value(-4.0)
 b = Value(2.0)
@@ -47,7 +47,7 @@ The notebook `demo.ipynb` provides a full demo of training an 2-layer neural net
 For added convenience, the notebook `trace_graph.ipynb` produces graphviz visualizations. E.g. this one below is of a simple 2D neuron, arrived at by calling `draw_dot` on the code below, and it shows both the data (left number in each node) and the gradient (right number in each node).
 
 ```python
-from micrograd import nn
+from micrograd_andrews import nn
 n = nn.Neuron(2)
 x = [Value(1.0), Value(-2.0)]
 y = n(x)
