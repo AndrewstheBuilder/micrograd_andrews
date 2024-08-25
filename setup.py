@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="micrograd",
-    version="0.1.0",
+    version="0.1.1",
     author="Andrej Karpathy",
     author_email="andrej.karpathy@gmail.com",
     description="A tiny scalar-valued autograd engine with a small PyTorch-like neural network library on top.",
