@@ -1,3 +1,5 @@
+import math
+from graphviz import Digraph
 
 class Value:
     """ stores a single scalar value and its gradient """
@@ -34,10 +36,20 @@ class Value:
 
     def __pow__(self, other):
         assert isinstance(other, (int, float)), "only supporting int/float powers for now"
-        out = Value(self.data**other, (self,), f'**{other}')
+        out = Value(self.data**other, (self,), f'{self.data}**{other}')
 
         def _backward():
             self.grad += (other * self.data**(other-1)) * out.grad
+        out._backward = _backward
+
+        return out
+
+    def exp(self):
+        out = Value(math.exp(self.data), (self,), "e")
+
+        def _backward():
+            self.grad += math.exp(self.data) * out.grad
+
         out._backward = _backward
 
         return out
@@ -91,4 +103,35 @@ class Value:
         return other * self**-1
 
     def __repr__(self):
-        return f"Value(data={self.data}, grad={self.grad})"
+        return f"Value(data={self.data}, grad={self.grad}, _op={self._op})"
+
+    def trace(self, root):
+        nodes, edges = set(), set()
+        def build(v):
+            if v not in nodes:
+                nodes.add(v)
+                for child in v._prev:
+                    edges.add((child, v))
+                    build(child)
+        build(root)
+        return nodes, edges
+
+    def draw_dot(self, root, format='svg', rankdir='LR'):
+        """
+        format: png | svg | ...
+        rankdir: TB (top to bottom graph) | LR (left to right)
+        """
+        assert rankdir in ['LR', 'TB']
+        nodes, edges = self.trace(root)
+        dot = Digraph(format=format, graph_attr={'rankdir': rankdir}) #, node_attr={'rankdir': 'TB'})
+
+        for n in nodes:
+            dot.node(name=str(id(n)), label = "{ data %.4f | grad %.4f }" % (n.data, n.grad), shape='record')
+            if n._op:
+                dot.node(name=str(id(n)) + n._op, label=n._op)
+                dot.edge(str(id(n)) + n._op, str(id(n)))
+
+        for n1, n2 in edges:
+            dot.edge(str(id(n1)), str(id(n2)) + n2._op)
+
+        return dot
