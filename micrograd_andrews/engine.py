@@ -64,10 +64,14 @@ class Value:
         return out
 
     def log(self):
-        out = Value(math.log(self.data), (self,), "math.log")
+        epsilon = 1e-10  # Small constant to prevent log(0)
+
+        # Clamp the input to prevent log(0)
+        clamped_data = max(self.data, epsilon)
+        out = Value(math.log(clamped_data), (self,), "math.log")
 
         def _backward():
-            self.grad += (1/(out.data))*out.grad
+            self.grad += (1/(clamped_data))*out.grad
         out._backward = _backward
 
         return out
