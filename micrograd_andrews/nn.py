@@ -18,7 +18,12 @@ class Neuron(Module):
         self.nonlin = nonlin
 
     def __call__(self, x):
-        act = sum((wi*xi for wi,xi in zip(self.w, x)), self.b)
+        # Start with the bias
+        act = self.b
+        # Add the weighted inputs
+        for wi, xi in zip(self.w, x):
+            act += wi * xi
+        # Apply activation if required
         return act.relu() if self.nonlin else act
 
     def parameters(self):
