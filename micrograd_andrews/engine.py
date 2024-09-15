@@ -129,13 +129,13 @@ class Value:
         build(root)
         return nodes, edges
 
-    def draw_dot(self, root, format='svg', rankdir='LR'):
+    def draw_dot(self, format='svg', rankdir='LR'):
         """
         format: png | svg | ...
         rankdir: TB (top to bottom graph) | LR (left to right)
         """
         assert rankdir in ['LR', 'TB']
-        nodes, edges = self.trace(root)
+        nodes, edges = self.trace(self)
         dot = Digraph(format=format, graph_attr={'rankdir': rankdir}) #, node_attr={'rankdir': 'TB'})
 
         for n in nodes:
